@@ -75,14 +75,14 @@ AutoQA is a multi-agent AI platform designed to automate software quality assura
 
 ## Features
 
--🤖 **Multi-agent workflow** with dedicated test generation and evaluation agents
--🧪 **Auto test generation** using AI-driven planning and code analysis
--🔍 **Hallucination detection** for model output validation
--📊 **Drift monitoring** to track evaluation behavior over time
--🖥️ **Interactive dashboard** for results, metrics, and reports
--📝 **Report generation** with health scoring and actionable findings
--⚡ **Multi-provider support** for Ollama and Google AI Studio
--💻 **CLI-first developer experience** with reusable pipeline commands
+-  🤖 **Multi-agent workflow** with dedicated test generation and evaluation agents
+-  🧪 **Auto test generation** using AI-driven planning and code analysis
+-  🔍 **Hallucination detection** for model output validation
+-  📊 **Drift monitoring** to track evaluation behavior over time
+-  🖥️ **Interactive dashboard** for results, metrics, and reports
+-  📝 **Report generation** with health scoring and actionable findings
+-  ⚡ **Multi-provider support** for Ollama and Google AI Studio
+-  💻 **CLI-first developer experience** with reusable pipeline commands
 
 ---
 
