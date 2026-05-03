@@ -75,14 +75,14 @@ AutoQA is a multi-agent AI platform designed to automate software quality assura
 
 ## Features
 
-- ? **Multi-agent workflow** with dedicated test generation and evaluation agents
-- ?? **Auto test generation** using AI-driven planning and code analysis
-- ?? **Hallucination detection** for model output validation
-- ?? **Drift monitoring** to track evaluation behavior over time
-- ?? **Interactive dashboard** for results, metrics, and reports
-- ?? **Report generation** with health scoring and actionable findings
-- ?? **Multi-provider support** for Ollama and Google AI Studio
-- ?? **CLI-first developer experience** with reusable pipeline commands
+-🤖 **Multi-agent workflow** with dedicated test generation and evaluation agents
+-🧪 **Auto test generation** using AI-driven planning and code analysis
+-🔍 **Hallucination detection** for model output validation
+-📊 **Drift monitoring** to track evaluation behavior over time
+-🖥️ **Interactive dashboard** for results, metrics, and reports
+-📝 **Report generation** with health scoring and actionable findings
+-⚡ **Multi-provider support** for Ollama and Google AI Studio
+-💻 **CLI-first developer experience** with reusable pipeline commands
 
 ---
 
@@ -223,14 +223,16 @@ Reports are written into `reports/` and can be opened with `python src/autoqa/cl
 
 ## Tech Stack
 
-- Python
-- Ollama
-- Streamlit
-- Plotly
-- Google AI Studio
-- pytest
-- rich
-- openai
+- Python 3.11+
+- Ollama (local LLM inference)
+- FastAPI (backend API)
+- React + Vite (frontend)
+- Tailwind CSS (styling)
+- Recharts (charts)
+- Google AI Studio (cloud LLM)
+- pytest (test validation)
+- rich (CLI output)
+- openai Python library (Ollama API calls)
 
 ---
 
