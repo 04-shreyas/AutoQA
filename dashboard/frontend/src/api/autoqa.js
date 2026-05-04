@@ -43,7 +43,7 @@ export const listRuns = async () => {
 };
 
 export const runPipeline = async (targetPath, promptsPath, model) => {
-  const response = await api.post('/run', {
+  const response = await axios.post('http://localhost:8000/api/run', {
     target_path: targetPath,
     prompts_path: promptsPath,
     model: model,

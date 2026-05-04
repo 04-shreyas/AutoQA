@@ -26,10 +26,10 @@ from pipelines import AutoQAPipeline
 
 BANNER = "\n".join(
 	[
-		"╔═══════════════════════════════╗",
-		"║  AutoQA — AI Quality Platform ║",
-		"║  v1.0.0                       ║",
-		"╚═══════════════════════════════╝",
+		"=================================",
+		"  AutoQA - AI Quality Platform  ",
+		"  v1.0.0                         ",
+		"=================================",
 	]
 )
 

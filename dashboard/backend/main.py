@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import uuid
@@ -10,6 +11,7 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 # Setup path for AutoQA imports
 # Setup path for AutoQA imports
@@ -37,6 +39,12 @@ app.add_middleware(
 
 # Track running processes
 _running_processes: dict[str, dict[str, Any]] = {}
+
+
+class RunRequest(BaseModel):
+	target_path: str = "."
+	prompts_path: str = "data/sample_prompts.json"
+	model: str = "ollama/qwen2.5-coder:7b"
 
 
 @app.get("/api/health")
@@ -219,12 +227,12 @@ async def list_runs() -> dict[str, Any]:
 
 
 @app.post("/api/run")
-async def trigger_run(request_data: dict[str, str]) -> dict[str, str]:
+async def trigger_run(request_data: RunRequest) -> dict[str, str]:
 	"""Trigger a new AutoQA pipeline run."""
 	try:
-		target_path = request_data.get("target_path", ".")
-		prompts_path = request_data.get("prompts_path", "data/sample_prompts.json")
-		model = request_data.get("model", "ollama/qwen2.5-coder:7b")
+		target_path = request_data.target_path.strip() or "."
+		prompts_path = request_data.prompts_path.strip() or "data/sample_prompts.json"
+		model = request_data.model.strip() or f"ollama/{config.OLLAMA_MODEL}"
 		
 		# Generate run ID
 		run_id = str(uuid.uuid4())
@@ -238,15 +246,25 @@ async def trigger_run(request_data: dict[str, str]) -> dict[str, str]:
 			target_path,
 			"--prompts",
 			prompts_path,
+			"--model",
+			model,
 		]
+
+		log_dir = PROJECT_ROOT / "logs"
+		log_dir.mkdir(parents=True, exist_ok=True)
+		log_path = log_dir / f"run_{run_id}.log"
+		log_handle = log_path.open("w", encoding="utf-8")
 		
 		# Start subprocess in background
+		env = dict(**os.environ)
+		env["PYTHONIOENCODING"] = "utf-8"
 		process = subprocess.Popen(
 			cmd,
 			cwd=str(PROJECT_ROOT),
-			stdout=subprocess.PIPE,
-			stderr=subprocess.PIPE,
+			stdout=log_handle,
+			stderr=subprocess.STDOUT,
 			text=True,
+			env=env,
 		)
 		
 		# Store process info
@@ -256,12 +274,13 @@ async def trigger_run(request_data: dict[str, str]) -> dict[str, str]:
 			"status": "running",
 			"step": "initialization",
 			"progress": 0,
+			"log_path": str(log_path),
+			"log_handle": log_handle,
 		}
 		
 		return {
 			"status": "started",
 			"run_id": run_id,
-			"message": f"AutoQA pipeline started with ID {run_id}",
 		}
 	except Exception as exc:
 		raise HTTPException(status_code=500, detail=str(exc))
@@ -285,6 +304,7 @@ async def run_status(run_id: str) -> dict[str, Any]:
 			"progress": run_info.get("progress", 0),
 			"current_step": run_info.get("step", "processing"),
 			"start_time": run_info.get("start_time"),
+			"log_path": run_info.get("log_path"),
 		}
 	else:
 		# Process finished
@@ -294,6 +314,12 @@ async def run_status(run_id: str) -> dict[str, Any]:
 		# Update stored info
 		run_info["status"] = status
 		run_info["end_time"] = datetime.utcnow().isoformat()
+		log_handle = run_info.get("log_handle")
+		if log_handle:
+			try:
+				log_handle.close()
+			except Exception:
+				pass
 		
 		return {
 			"status": status,
@@ -303,6 +329,7 @@ async def run_status(run_id: str) -> dict[str, Any]:
 			"start_time": run_info.get("start_time"),
 			"end_time": run_info.get("end_time"),
 			"return_code": return_code,
+			"log_path": run_info.get("log_path"),
 		}
 
 
