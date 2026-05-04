@@ -12,12 +12,17 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 # Setup path for AutoQA imports
+# Setup path for AutoQA imports
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = PROJECT_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
 	sys.path.insert(0, str(SRC_ROOT))
 
 from autoqa import config
+
+# Override paths to use absolute project root paths
+config.DATA_DIR = str(PROJECT_ROOT / "data")
+config.REPORTS_DIR = str(PROJECT_ROOT / "reports")
 
 app = FastAPI(title="AutoQA Backend", version="1.0.0")
 
