@@ -40,8 +40,7 @@ export default function Overview() {
           <MetricCard title="Tests Generated" value={summary?.tests_generated ?? '—'} />
           <MetricCard title="Pass Rate" value={summary ? `${summary.pass_rate}%` : '—'} />
           <MetricCard title="Hallucination Score" value={summary ? `${summary.avg_hallucination_score}%` : '—'} />
-          <MetricCard title="Drift Score" value={summary ? `${summary.drift_score}%` : '—'} />
-        </div>
+          <MetricCard title="Drift Score" value={summary ? `${Number(summary.drift_score).toFixed(1)}%` : '—'} />        </div>
 
         <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 shadow-xl shadow-black/20">
           <div className="mb-3 flex items-center justify-between">
