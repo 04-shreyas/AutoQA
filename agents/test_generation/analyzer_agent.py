@@ -99,7 +99,11 @@ class CodeAnalyzerAgent:
 
 	def _iter_py_files(self, project_root: Path) -> list[Path]:
 		"""Iterate over all Python files in the project, skipping common directories."""
-		skip_dirs = {"__pycache__", "venv", ".git"}
+		skip_dirs = {
+			"__pycache__", "venv", ".git", "node_modules",
+			"dist", "build", ".pytest_cache", ".mypy_cache",
+			".venv", "env", "dashboard"
+		}
 		results: list[Path] = []
 		for root, dirs, files in os.walk(project_root):
 			dirs[:] = [d for d in dirs if d not in skip_dirs]
