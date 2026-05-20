@@ -32,6 +32,8 @@ class PromptRunnerAgent:
 		self.client = OpenAI(
 			base_url=f"{config.OLLAMA_BASE_URL.rstrip('/')}/v1",
 			api_key="ollama",
+			timeout=120,
+			max_retries=config.MAX_RETRIES,
 		)
 
 	def run(self, prompts: list[dict[str, Any]], model_config: dict[str, Any]) -> dict[str, Any]:
@@ -39,13 +41,20 @@ class PromptRunnerAgent:
 		latencies: list[float] = []
 		provider = model_config.get("provider", "ollama")
 
-		for item in prompts:
+		total = len(prompts)
+		for index, item in enumerate(prompts, start=1):
 			prompt_text = item.get("prompt", "")
+			prompt_id = item.get("id", "")
+			self.logger.info("Running prompt %s/%s (%s)", index, total, prompt_id)
 			start = time.monotonic()
-			if provider == "google":
-				response = self._call_google(prompt_text, model_config)
-			else:
-				response = self._call_ollama(prompt_text, model_config)
+			try:
+				if provider == "google":
+					response = self._call_google(prompt_text, model_config)
+				else:
+					response = self._call_ollama(prompt_text, model_config)
+			except Exception as exc:
+				self.logger.warning("Prompt %s failed: %s", prompt_id or index, exc)
+				response = ""
 			end = time.monotonic()
 			latency_ms = (end - start) * 1000
 			latencies.append(latency_ms)

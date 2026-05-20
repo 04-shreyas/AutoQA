@@ -29,6 +29,8 @@ class TestPlannerAgent:
 		self.client = OpenAI(
 			base_url=f"{config.OLLAMA_BASE_URL.rstrip('/')}/v1",
 			api_key="ollama",
+			timeout=120,
+			max_retries=config.MAX_RETRIES,
 		)
 
 	def plan(self, analysis: dict[str, Any]) -> dict[str, Any]:
@@ -151,7 +153,23 @@ class TestPlannerAgent:
 					file_path,
 					exc,
 				)
-		return {}
+		self.logger.warning(
+			"Falling back to minimal plan for %s (%s)",
+			function_name,
+			file_path,
+		)
+		return self._fallback_plan(function_name)
+
+	def _fallback_plan(self, function_name: str) -> dict[str, Any]:
+		"""Return a minimal plan when the model output cannot be parsed."""
+		return {
+			"test_type": "unit",
+			"test_cases": [f"basic behavior for {function_name}"],
+			"edge_cases": [],
+			"expected_inputs": [],
+			"expected_outputs": [],
+			"priority": "medium",
+		}
 
 	def _parse_json_response(self, response_text: str) -> dict[str, Any]:
 		response_text = response_text.strip()
